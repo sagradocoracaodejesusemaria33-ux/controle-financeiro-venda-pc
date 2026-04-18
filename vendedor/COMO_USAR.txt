@@ -1,0 +1,17 @@
+COMO USAR O GERADOR
+
+1. Abra o arquivo:
+   gerador_chave_ativacao.html
+
+2. O cliente vai te mandar o Codigo de registro.
+
+3. Cole o codigo no gerador.
+
+4. Clique em "Gerar chave".
+
+5. Envie a chave de ativacao para o cliente.
+
+Opcional:
+- Voce tambem pode usar o script:
+  gerar_chave_ativacao.ps1
+

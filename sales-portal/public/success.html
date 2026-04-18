@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pagamento confirmado - Controle Financeiro Familiar</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <main class="page">
+    <section class="card cardNarrow">
+      <div class="hero">
+        <p class="eyebrow">Compra concluida</p>
+        <h1>Sua licenca</h1>
+        <p id="statusText" class="heroText">Conferindo o pagamento e preparando sua chave...</p>
+      </div>
+
+      <div class="licenseBox">
+        <span>Codigo de registro</span>
+        <strong id="registrationCodeText">-</strong>
+      </div>
+
+      <div class="licenseBox">
+        <span>Chave de ativacao</span>
+        <strong id="licenseKeyText">-</strong>
+      </div>
+
+      <div class="actions">
+        <button id="copyLicenseButton" class="primary" type="button">Copiar chave</button>
+        <button id="refreshButton" class="secondary" type="button">Atualizar status</button>
+      </div>
+
+      <p id="supportText" class="message"></p>
+    </section>
+  </main>
+
+  <script src="./success.js" type="module"></script>
+</body>
+</html>

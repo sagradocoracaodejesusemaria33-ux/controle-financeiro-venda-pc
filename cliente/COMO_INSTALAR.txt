@@ -1,0 +1,11 @@
+COMO INSTALAR
+
+1. Abra o arquivo do instalador.
+2. Clique em avancar para instalar o programa.
+3. Quando abrir, o programa vai mostrar:
+   - Codigo de registro
+   - Campo para chave de ativacao
+   - Opcao de 3 dias de teste
+
+Se precisar, envie o Codigo de registro para receber a chave.
+

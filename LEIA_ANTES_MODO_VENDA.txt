@@ -1,0 +1,19 @@
+MODO VENDA CORRIGIDO
+
+O que foi corrigido:
+- A chave nao e mais validada localmente no app usando segredo embutido.
+- A validacao agora depende do endpoint /api/validate-license no servidor.
+- O .env.example nao traz mais segredo padrao.
+
+Importante:
+1) Gere um novo instalador a partir deste codigo antes de vender.
+2) Defina LICENSE_SECRET no Render com um valor forte e unico.
+3) Nao entregue ao cliente o codigo-fonte nem o sales-portal.
+4) Ao cliente entregue somente o instalador final.
+
+Sugestao de build no Windows:
+- npm install
+- npm run tauri build
+
+Depois pegue o instalador gerado em:
+src-tauri\target\release\bundle\nsis\

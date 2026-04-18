@@ -1,0 +1,948 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acesso - Controle Financeiro Familiar</title>
+  <style>
+    :root{
+      --navy:#0b2c86;
+      --navy-deep:#091a61;
+      --navy-soft:#1747db;
+      --cyan:#46d9ff;
+      --action-blue:#123b98;
+      --sales-portal-url:https://controle-financeiro-familiar-sales.onrender.com;
+      --auth-header-height:152px;
+      --text:#14325f;
+      --muted:#73829a;
+      --line:#dde6f2;
+      --panel:#ffffff;
+    }
+    *{box-sizing:border-box}
+    html,body{
+      margin:0;
+      width:100%;
+      height:100%;
+      overflow:hidden;
+      font-family:"Segoe UI",Tahoma,sans-serif;
+      background:var(--action-blue);
+      color:var(--text);
+    }
+    body{
+      width:100%;
+      height:100%;
+      padding:0;
+      background:var(--action-blue);
+    }
+    .authShell{
+      position:relative;
+      width:100%;
+      height:100%;
+      display:flex;
+      flex-direction:column;
+      background:#ffffff;
+      border:1px solid rgba(18,59,152,.16);
+      border-radius:18px;
+      overflow:hidden;
+      box-shadow:0 14px 30px rgba(10,26,78,.14);
+    }
+    .authShell::before{
+      content:none;
+    }
+    .authShell::after{
+      content:none;
+    }
+    .authClose{
+      position:absolute;
+      top:14px;
+      right:14px;
+      z-index:3;
+      width:22px;
+      height:22px;
+      border:none;
+      background:transparent;
+      color:rgba(255,255,255,.94);
+      font-size:20px;
+      line-height:1;
+      cursor:pointer;
+      opacity:.92;
+    }
+    .authClose:hover{opacity:1}
+    .authHeader{
+      position:relative;
+      z-index:2;
+      min-height:var(--auth-header-height);
+      padding:18px 16px 16px;
+      overflow:hidden;
+      border-top-left-radius:18px;
+      border-top-right-radius:18px;
+      border-bottom:none;
+      background:var(--action-blue);
+    }
+    .authLogoWrap{
+      position:relative;
+      z-index:1;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      margin:4px 0 14px;
+    }
+    .authLogoWrap::before{
+      content:none;
+    }
+    .authLogo{
+      width:60px;
+      height:60px;
+      object-fit:contain;
+      filter:none;
+    }
+    .authTitleBox{
+      position:relative;
+      z-index:1;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:1px;
+      color:#ffffff;
+      text-align:center;
+      text-transform:uppercase;
+      letter-spacing:.36px;
+      text-shadow:0 2px 8px rgba(0,0,0,.18);
+    }
+    .authTitleBox span{
+      font-size:13px;
+      font-weight:800;
+      line-height:1.08;
+    }
+    .authTitleBox small{
+      position:relative;
+      font-size:8px;
+      font-weight:700;
+      color:var(--cyan);
+      letter-spacing:.52px;
+      padding:0 22px;
+    }
+    .authTitleBox small::before,
+    .authTitleBox small::after{
+      content:"";
+      position:absolute;
+      top:50%;
+      width:16px;
+      height:1px;
+      background:rgba(70,217,255,.72);
+    }
+    .authTitleBox small::before{left:0}
+    .authTitleBox small::after{right:0}
+    .authBody{
+      position:relative;
+      z-index:2;
+      flex:1;
+      min-height:0;
+      padding:16px 14px 24px;
+      background:#ffffff;
+      border-bottom-left-radius:18px;
+      border-bottom-right-radius:18px;
+    }
+    .authPanel{display:none}
+    .authPanel.active{
+      display:block;
+      animation:fadeIn .18s ease;
+    }
+    @keyframes fadeIn{
+      from{opacity:0; transform:translateY(4px)}
+      to{opacity:1; transform:translateY(0)}
+    }
+    .authBadge{
+      display:none;
+    }
+    .authTitle{
+      margin:0 0 2px;
+      font-size:14px;
+      font-weight:900;
+      color:#113b81;
+      line-height:1.12;
+    }
+    .authHelper{
+      margin:0 0 10px;
+      font-size:9px;
+      line-height:1.35;
+      color:var(--muted);
+    }
+    .authLabel{
+      display:block;
+      margin:0 0 4px;
+      font-size:10px;
+      font-weight:800;
+      color:#203b66;
+    }
+    .authInput{
+      width:100%;
+      display:block;
+      height:36px;
+      margin:0 0 8px;
+      padding:8px 12px;
+      border:1.5px solid var(--line);
+      border-radius:12px;
+      background:#ffffff;
+      font-size:11px;
+      color:var(--text);
+      outline:none;
+      box-shadow:none;
+    }
+    .authInput[readonly]{
+      background:#f7faff;
+      color:#113b81;
+      font-weight:800;
+    }
+    .authInput::placeholder{color:#a3afc1}
+    .authInput:focus{
+      border-color:#2d6ce0;
+      box-shadow:0 0 0 3px rgba(45,108,224,.1);
+    }
+    .authCheck{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      margin:0 0 10px;
+      font-size:9px;
+      color:var(--muted);
+    }
+    .authCheck input{
+      margin:0;
+      width:13px;
+      height:13px;
+      accent-color:#1b4fc4;
+    }
+    .authInfo{
+      margin:0 0 8px;
+      font-size:9px;
+      line-height:1.35;
+      color:var(--muted);
+    }
+    .authActions{
+      display:grid;
+      gap:6px;
+    }
+    .authActions.two{
+      grid-template-columns:1fr 1fr;
+    }
+    .authButton,
+    .authButtonAlt{
+      width:100%;
+      min-height:38px;
+      border:none;
+      border-radius:12px;
+      padding:9px 12px;
+      font-size:11px;
+      font-weight:900;
+      cursor:pointer;
+    }
+    .authButton{
+      background:var(--action-blue);
+      color:#ffffff;
+    }
+    .authButton:disabled,
+    .authButtonAlt:disabled{
+      opacity:.55;
+      cursor:not-allowed;
+    }
+    .authButtonAlt{
+      background:#edf4ff;
+      color:#184cba;
+    }
+    .authLinks{
+      display:flex;
+      justify-content:flex-start;
+      gap:12px;
+      margin-top:12px;
+    }
+    .authLink{
+      border:none;
+      background:transparent;
+      padding:0;
+      font-size:10px;
+      font-weight:900;
+      color:#113b99;
+      cursor:pointer;
+    }
+    .authMsg{
+      min-height:13px;
+      margin-top:6px;
+      font-size:9px;
+      color:#c0392b;
+    }
+    .authMsg.ok{color:#15803d}
+    .authSuccess{
+      margin-top:6px;
+      padding:7px 9px;
+      border-radius:11px;
+      background:#eefbf2;
+      border:1px solid #b8e3c1;
+      color:#166534;
+      font-size:9px;
+      font-weight:800;
+    }
+    #panelLogin .authLinks{
+      margin-top:18px;
+    }
+    #panelRecovery .authLinks{
+      margin-top:24px;
+    }
+    .authHidden{display:none !important}
+  </style>
+</head>
+<body>
+  <main class="authShell">
+    <button id="closeAppBtn" class="authClose" type="button" aria-label="Fechar">×</button>
+
+    <div class="authHeader" data-tauri-drag-region>
+      <div class="authLogoWrap">
+        <img class="authLogo" src="./logo.png" alt="Controle Financeiro Familiar">
+      </div>
+      <div class="authTitleBox">
+        <span>Controle Financeiro</span>
+        <small>Familiar</small>
+      </div>
+    </div>
+
+    <div class="authBody">
+      <section id="panelActivation" class="authPanel">
+        <h1 class="authTitle">Ativar programa</h1>
+        <p class="authHelper">Copie o codigo de registro e compre a licenca online. Depois cole a chave para validar pela internet e liberar este computador. Se preferir, clique em usar 3 dias de teste para abrir o programa agora.</p>
+
+        <p id="trialInfo" class="authInfo"></p>
+
+        <label class="authLabel" for="registrationCode">Codigo de registro</label>
+        <input id="registrationCode" class="authInput" type="text" readonly>
+
+        <div class="authActions">
+          <button id="copyRegistrationCode" class="authButtonAlt" type="button">Copiar codigo</button>
+          <button id="buyLicenseOnline" class="authButton" type="button">Comprar licenca online</button>
+        </div>
+
+        <label class="authLabel" for="activationKey">Chave de ativacao</label>
+        <input id="activationKey" class="authInput" type="text" autocomplete="off" placeholder="Digite sua chave de licenca">
+
+        <div class="authActions">
+          <button id="activateLicense" class="authButton" type="button">Liberar acesso</button>
+          <button id="continueTrial" class="authButtonAlt" type="button">Usar 3 dias de teste</button>
+        </div>
+
+        <div class="authLinks">
+          <button id="copyRegistrationCodeLink" class="authLink" type="button">Copiar codigo de registro</button>
+        </div>
+
+        <div id="activationMsg" class="authMsg"></div>
+      </section>
+
+      <section id="panelCadastroDados" class="authPanel">
+        <h1 class="authTitle">Primeiro acesso</h1>
+        <p class="authHelper">Crie seu usuario e sua senha para entrar no programa.</p>
+
+        <label class="authLabel" for="cadUser">Usuario</label>
+        <input id="cadUser" class="authInput" type="text" autocomplete="username" placeholder="Crie um usuario">
+
+        <label class="authLabel" for="cadPass">Senha</label>
+        <input id="cadPass" class="authInput" type="password" autocomplete="new-password" placeholder="Crie uma senha">
+
+        <label class="authLabel" for="cadPass2">Confirmar senha</label>
+        <input id="cadPass2" class="authInput" type="password" autocomplete="new-password" placeholder="Repita a senha">
+
+        <div class="authActions">
+          <button id="goCadastroPerguntas" class="authButton" type="button">Proximo</button>
+        </div>
+
+        <div id="cadastroDadosLinks" class="authLinks authHidden">
+          <button id="goLoginFromCadastro" class="authLink" type="button">Entrar</button>
+        </div>
+
+        <div class="authLinks">
+          <button id="buyLicenseOnlineCadastro" class="authLink" type="button">Comprar licenca online</button>
+        </div>
+
+        <div id="cadDadosMsg" class="authMsg"></div>
+      </section>
+
+      <section id="panelCadastroPerguntas" class="authPanel">
+        <h1 class="authTitle">Seguranca da conta</h1>
+        <p class="authHelper">Responda as perguntas abaixo. Elas serao usadas para recuperar o acesso.</p>
+
+        <label class="authLabel" for="cadPerg1">1. Qual era o nome do seu primeiro cachorro?</label>
+        <input id="cadPerg1" class="authInput" type="text" placeholder="Digite a resposta">
+
+        <label class="authLabel" for="cadPerg2">2. Qual cidade voce gostaria de morar?</label>
+        <input id="cadPerg2" class="authInput" type="text" placeholder="Digite a resposta">
+
+        <label class="authLabel" for="cadPerg3">3. Qual pais voce gostaria de conhecer?</label>
+        <input id="cadPerg3" class="authInput" type="text" placeholder="Digite a resposta">
+
+        <div class="authActions two">
+          <button id="backCadastroDados" class="authButtonAlt" type="button">Voltar</button>
+          <button id="saveCadastro" class="authButton" type="button">Salvar e entrar</button>
+        </div>
+
+        <div class="authLinks">
+          <button id="buyLicenseOnlinePerguntas" class="authLink" type="button">Comprar licenca online</button>
+        </div>
+
+        <div id="cadPerguntasMsg" class="authMsg"></div>
+      </section>
+
+      <section id="panelLogin" class="authPanel">
+        <h1 class="authTitle">Acessar conta</h1>
+        <p class="authHelper">Entre para abrir o controle financeiro.</p>
+
+        <label class="authLabel" for="loginUser">Usuario</label>
+        <input id="loginUser" class="authInput" type="text" autocomplete="username" placeholder="Digite seu usuario">
+
+        <label class="authLabel" for="loginPass">Senha</label>
+        <input id="loginPass" class="authInput" type="password" autocomplete="current-password" placeholder="Digite sua senha">
+
+        <label class="authCheck" for="rememberLogin">
+          <input id="rememberLogin" type="checkbox">
+          <span>Lembrar usuario e senha</span>
+        </label>
+
+        <div class="authActions">
+          <button id="doLogin" class="authButton" type="button">Entrar</button>
+        </div>
+
+        <div class="authLinks">
+          <button id="buyLicenseOnlineLogin" class="authLink" type="button">Comprar licenca online</button>
+          <button id="goRecoveryFromLogin" class="authLink" type="button">Esqueceu login e senha?</button>
+        </div>
+
+        <div id="loginMsg" class="authMsg"></div>
+        <div id="loginSuccess" class="authSuccess authHidden">Login confirmado. Abrindo o programa.</div>
+      </section>
+
+      <section id="panelRecovery" class="authPanel">
+        <h1 class="authTitle">Recuperar acesso</h1>
+        <p class="authHelper">Se quiser, troque o usuario. Depois crie a nova senha e responda as perguntas abaixo.</p>
+
+        <label class="authLabel" for="recUser">Novo usuario (opcional)</label>
+        <input id="recUser" class="authInput" type="text" autocomplete="username" placeholder="Deixe como esta ou digite um novo usuario">
+
+        <label class="authLabel" for="newPass">Nova senha</label>
+        <input id="newPass" class="authInput" type="password" autocomplete="new-password" placeholder="Digite a nova senha">
+
+        <label class="authLabel" for="newPass2">Confirmar nova senha</label>
+        <input id="newPass2" class="authInput" type="password" autocomplete="new-password" placeholder="Repita a nova senha">
+
+        <label class="authLabel" for="recPerg1">1. Qual era o nome do seu primeiro cachorro?</label>
+        <input id="recPerg1" class="authInput" type="text" placeholder="Digite a resposta">
+
+        <label class="authLabel" for="recPerg2">2. Qual cidade voce gostaria de morar?</label>
+        <input id="recPerg2" class="authInput" type="text" placeholder="Digite a resposta">
+
+        <label class="authLabel" for="recPerg3">3. Qual pais voce gostaria de conhecer?</label>
+        <input id="recPerg3" class="authInput" type="text" placeholder="Digite a resposta">
+
+        <div class="authActions">
+          <button id="saveRecoveredAccess" class="authButton" type="button">Salvar nova senha</button>
+        </div>
+
+        <div class="authLinks">
+          <button id="buyLicenseOnlineRecovery" class="authLink" type="button">Comprar licenca online</button>
+          <button id="goRecoveryAgain" class="authLink" type="button">Esqueceu login e senha?</button>
+        </div>
+
+        <div id="recoveryMsg" class="authMsg"></div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    (function(){
+      const KEYS = {
+        activation: "cf_activation_key_v1",
+        registration: "cf_activation_registration_v1",
+        trialStart: "cf_activation_trial_start_v1",
+        user: "cf_auth_user_v1",
+        pass: "cf_auth_pass_v1",
+        q1: "cf_auth_q1_v1",
+        q2: "cf_auth_q2_v1",
+        q3: "cf_auth_q3_v1",
+        remember: "cf_auth_remember_v1"
+      };
+      const FALLBACK_SALES_PORTAL_URL = getComputedStyle(document.documentElement)
+        .getPropertyValue("--sales-portal-url")
+        .trim();
+      const TRIAL_DAYS = 3;
+
+      const cadastroDraft = { user: "", pass: "" };
+      let currentPanel = "";
+      let authWindowShown = false;
+      const PANEL_SIZES = {
+        "activation": { width: 360, height: 610 },
+        "cadastro-dados": { width: 360, height: 580 },
+        "cadastro-perguntas": { width: 360, height: 620 },
+        "login": { width: 360, height: 500 },
+        "recovery": { width: 360, height: 760 }
+      };
+
+      function byId(id){ return document.getElementById(id); }
+      function norm(value){ return String(value || "").trim().toLowerCase(); }
+      function normLicense(value){ return String(value || "").trim().toUpperCase().replace(/\s+/g, ""); }
+      function randomRegistrationChunk(length){
+        const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+        let out = "";
+        for(let i = 0; i < length; i += 1){
+          out += chars[Math.floor(Math.random() * chars.length)];
+        }
+        return out;
+      }
+      function getRegistrationCode(){
+        let saved = localStorage.getItem(KEYS.registration);
+        if(saved) return saved;
+        saved = [
+          randomRegistrationChunk(4),
+          randomRegistrationChunk(4),
+          randomRegistrationChunk(4)
+        ].join("-");
+        localStorage.setItem(KEYS.registration, saved);
+        return saved;
+      }
+      function getTrialStatus(){
+        let trialStart = Number(localStorage.getItem(KEYS.trialStart) || 0);
+        if(!trialStart){
+          trialStart = Date.now();
+          localStorage.setItem(KEYS.trialStart, String(trialStart));
+        }
+        const totalMs = TRIAL_DAYS * 24 * 60 * 60 * 1000;
+        const elapsed = Date.now() - trialStart;
+        const remaining = totalMs - elapsed;
+        return {
+          active: remaining > 0,
+          remainingDays: Math.max(0, Math.ceil(remaining / (24 * 60 * 60 * 1000)))
+        };
+      }
+      function isActivated(){
+        const savedKey = localStorage.getItem(KEYS.activation) || "";
+        return !!normLicense(savedKey);
+      }
+      function hasTrialAccess(){
+        return getTrialStatus().active;
+      }
+      function canOpenAccessPanels(){
+        return isActivated() || hasTrialAccess();
+      }
+      function getUnlockedPanel(){
+        return isRegistered() ? "login" : "cadastro-dados";
+      }
+      function refreshActivationPanel(){
+        const registrationCode = getRegistrationCode();
+        const trial = getTrialStatus();
+        const trialInfo = byId("trialInfo");
+        const trialButton = byId("continueTrial");
+        byId("registrationCode").value = registrationCode;
+
+        if(isActivated()){
+          trialInfo.textContent = "Programa ativado neste computador.";
+          trialButton.disabled = true;
+          trialButton.textContent = "Programa ativado";
+          return;
+        }
+
+        if(trial.active){
+          trialInfo.textContent = "Teste gratis ativo: " + trial.remainingDays + " dia(s) restante(s).";
+          trialButton.disabled = false;
+          trialButton.textContent = "Usar 3 dias de teste";
+        }else{
+          trialInfo.textContent = "Teste expirado. Agora use a chave de ativacao para liberar o programa.";
+          trialButton.disabled = true;
+          trialButton.textContent = "Teste expirado";
+        }
+      }
+
+      async function resizeWindowForPanel(panel){
+        const size = PANEL_SIZES[panel];
+        if(!size || currentPanel === panel) return;
+        currentPanel = panel;
+        try{
+          if(window.__TAURI__ && window.__TAURI__.core){
+            await window.__TAURI__.core.invoke("resize_window", size);
+          }
+        }catch(_error){}
+      }
+
+      async function showWindowOnce(){
+        if(authWindowShown) return;
+        authWindowShown = true;
+        try{
+          if(window.__TAURI__ && window.__TAURI__.core){
+            await window.__TAURI__.core.invoke("show_window");
+          }
+        }catch(_error){}
+      }
+
+      function setMsg(target, text, ok){
+        if(!target) return;
+        target.textContent = text || "";
+        target.classList.toggle("ok", !!ok);
+      }
+
+      function clearMsgs(){
+        setMsg(byId("activationMsg"), "");
+        setMsg(byId("cadDadosMsg"), "");
+        setMsg(byId("cadPerguntasMsg"), "");
+        setMsg(byId("loginMsg"), "");
+        setMsg(byId("recoveryMsg"), "");
+        byId("loginSuccess").classList.add("authHidden");
+      }
+
+      function isRegistered(){
+        return !!(localStorage.getItem(KEYS.user) && localStorage.getItem(KEYS.pass));
+      }
+
+      function saveRememberedLogin(){
+        if(!byId("rememberLogin").checked){
+          localStorage.removeItem(KEYS.remember);
+          return;
+        }
+
+        localStorage.setItem(KEYS.remember, JSON.stringify({
+          user: byId("loginUser").value.trim(),
+          pass: byId("loginPass").value
+        }));
+      }
+
+      function loadRememberedLogin(){
+        byId("rememberLogin").checked = false;
+        byId("loginUser").value = "";
+        byId("loginPass").value = "";
+      }
+
+      async function showPanel(panel){
+        clearMsgs();
+
+        if(!canOpenAccessPanels() && panel !== "activation"){
+          panel = "activation";
+        }
+
+        if(isRegistered() && (panel === "cadastro-dados" || panel === "cadastro-perguntas")){
+          panel = "login";
+        }
+
+        const cadastroLinks = byId("cadastroDadosLinks");
+        if(cadastroLinks){
+          cadastroLinks.classList.toggle("authHidden", !isRegistered());
+        }
+
+        byId("panelActivation").classList.toggle("active", panel === "activation");
+        byId("panelCadastroDados").classList.toggle("active", panel === "cadastro-dados");
+        byId("panelCadastroPerguntas").classList.toggle("active", panel === "cadastro-perguntas");
+        byId("panelLogin").classList.toggle("active", panel === "login");
+        byId("panelRecovery").classList.toggle("active", panel === "recovery");
+        await resizeWindowForPanel(panel);
+
+        if(panel === "activation"){
+          refreshActivationPanel();
+          setTimeout(function(){ byId("activationKey").focus(); }, 50);
+        }
+        if(panel === "cadastro-dados"){
+          setTimeout(function(){ byId("cadUser").focus(); }, 50);
+        }
+        if(panel === "cadastro-perguntas"){
+          setTimeout(function(){ byId("cadPerg1").focus(); }, 50);
+        }
+        if(panel === "login"){
+          loadRememberedLogin();
+          setTimeout(function(){ byId("loginUser").focus(); }, 50);
+        }
+        if(panel === "recovery"){
+          byId("recUser").value = localStorage.getItem(KEYS.user) || "";
+          byId("newPass").value = "";
+          byId("newPass2").value = "";
+          setTimeout(function(){ byId("recUser").focus(); }, 50);
+        }
+      }
+
+      async function closeApp(){
+        try{
+          if(window.__TAURI__ && window.__TAURI__.core){
+            await window.__TAURI__.core.invoke("close_window");
+            return;
+          }
+        }catch(_error){}
+        window.close();
+      }
+
+      async function finishAuth(){
+        localStorage.setItem("cf_auth_runtime_ok_v1", "1");
+        try{
+          if(window.__TAURI__ && window.__TAURI__.core){
+            await window.__TAURI__.core.invoke("finish_auth");
+            return true;
+          }
+        }catch(_error){}
+        try{
+          window.location.replace("./index.html");
+          return true;
+        }catch(_error){}
+        return false;
+      }
+
+      async function validateLicenseOnline(registrationCode, licenseKey){
+        const baseUrl = FALLBACK_SALES_PORTAL_URL.replace(/\/+$/, "");
+        const response = await fetch(baseUrl + "/api/validate-license", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ registrationCode, licenseKey })
+        });
+        const data = await response.json().catch(function(){ return {}; });
+        if(!response.ok || !data.valid){
+          throw new Error(data.error || "Chave de ativacao invalida.");
+        }
+        return data;
+      }
+
+      async function activateLicense(){
+        const typedKey = byId("activationKey").value.trim();
+
+        if(!typedKey){
+          setMsg(byId("activationMsg"), "Digite a chave de ativacao.");
+          return;
+        }
+
+        setMsg(byId("activationMsg"), "Validando licenca pela internet...");
+
+        try{
+          await validateLicenseOnline(getRegistrationCode(), typedKey);
+          localStorage.setItem(KEYS.activation, normLicense(typedKey));
+          setMsg(byId("activationMsg"), "Licenca validada. Liberando acesso.", true);
+          setTimeout(async function(){
+            const opened = await finishAuth();
+            if(!opened){
+              showPanel(getUnlockedPanel());
+            }
+          }, 220);
+        }catch(error){
+          const msg = error && error.message ? error.message : "Nao foi possivel validar a licenca agora.";
+          setMsg(byId("activationMsg"), msg);
+        }
+      }
+      function continueTrialAccess(){
+        const trial = getTrialStatus();
+        if(!trial.active){
+          setMsg(byId("activationMsg"), "O teste de 3 dias expirou. Digite a chave de ativacao.");
+          refreshActivationPanel();
+          return;
+        }
+        setMsg(byId("activationMsg"), "Teste liberado por " + trial.remainingDays + " dia(s). Abrindo o programa.", true);
+        setTimeout(async function(){
+          const opened = await finishAuth();
+          if(!opened){
+            setMsg(byId("activationMsg"), "Teste liberado, mas o programa nao abriu automaticamente.", true);
+          }
+        }, 220);
+      }
+      async function copyRegistrationCode(){
+        const code = getRegistrationCode();
+        try{
+          if(navigator.clipboard && navigator.clipboard.writeText){
+            await navigator.clipboard.writeText(code);
+            setMsg(byId("activationMsg"), "Codigo de registro copiado.", true);
+            return;
+          }
+        }catch(_error){}
+        setMsg(byId("activationMsg"), "Copie este codigo: " + code, true);
+      }
+
+      async function openPurchasePortal(){
+        const code = getRegistrationCode();
+        try{
+          if(window.__TAURI__ && window.__TAURI__.core){
+            await window.__TAURI__.core.invoke("open_purchase_portal", { registrationCode: code });
+            setMsg(byId("activationMsg"), "Pagina de compra aberta no navegador.", true);
+            return;
+          }
+        }catch(_error){}
+
+        try{
+          const url = FALLBACK_SALES_PORTAL_URL.replace(/\/+$/, "") + "/?registrationCode=" + encodeURIComponent(code);
+          window.open(url, "_blank", "noopener,noreferrer");
+          setMsg(byId("activationMsg"), "Pagina de compra aberta no navegador.", true);
+        }catch(_error){
+          setMsg(byId("activationMsg"), "Nao foi possivel abrir a compra online.");
+        }
+      }
+
+      function goCadastroPerguntas(){
+        const user = byId("cadUser").value.trim();
+        const pass = byId("cadPass").value;
+        const pass2 = byId("cadPass2").value;
+
+        if(!user || !pass || !pass2){
+          setMsg(byId("cadDadosMsg"), "Preencha usuario e senha.");
+          return;
+        }
+        if(pass.length < 4){
+          setMsg(byId("cadDadosMsg"), "A senha precisa ter pelo menos 4 caracteres.");
+          return;
+        }
+        if(pass !== pass2){
+          setMsg(byId("cadDadosMsg"), "As senhas nao conferem.");
+          return;
+        }
+
+        cadastroDraft.user = user;
+        cadastroDraft.pass = pass;
+        showPanel("cadastro-perguntas");
+      }
+
+      async function saveCadastro(){
+        const q1 = byId("cadPerg1").value.trim();
+        const q2 = byId("cadPerg2").value.trim();
+        const q3 = byId("cadPerg3").value.trim();
+
+        if(!cadastroDraft.user || !cadastroDraft.pass){
+          showPanel("cadastro-dados");
+          setMsg(byId("cadDadosMsg"), "Preencha usuario e senha primeiro.");
+          return;
+        }
+        if(!q1 || !q2 || !q3){
+          setMsg(byId("cadPerguntasMsg"), "Responda as 3 perguntas.");
+          return;
+        }
+
+        localStorage.setItem(KEYS.user, cadastroDraft.user);
+        localStorage.setItem(KEYS.pass, cadastroDraft.pass);
+        localStorage.setItem(KEYS.q1, q1);
+        localStorage.setItem(KEYS.q2, q2);
+        localStorage.setItem(KEYS.q3, q3);
+
+        byId("loginUser").value = cadastroDraft.user;
+        byId("loginPass").value = cadastroDraft.pass;
+        byId("rememberLogin").checked = true;
+        saveRememberedLogin();
+
+        setMsg(byId("cadPerguntasMsg"), "Cadastro salvo. Abrindo o programa.", true);
+        setTimeout(function(){
+          finishAuth();
+        }, 260);
+      }
+
+      async function doLogin(){
+        const user = byId("loginUser").value.trim();
+        const pass = byId("loginPass").value;
+        const savedUser = localStorage.getItem(KEYS.user) || "";
+        const savedPass = localStorage.getItem(KEYS.pass) || "";
+
+        if(!savedUser || !savedPass){
+          showPanel("cadastro-dados");
+          setMsg(byId("cadDadosMsg"), "Cadastre um usuario e senha primeiro.");
+          return;
+        }
+        if(norm(user) !== norm(savedUser) || pass !== savedPass){
+          setMsg(byId("loginMsg"), "Usuario ou senha incorretos.");
+          return;
+        }
+
+        localStorage.setItem(KEYS.user, user);
+        saveRememberedLogin();
+        setMsg(byId("loginMsg"), "Login confirmado.", true);
+        byId("loginSuccess").classList.remove("authHidden");
+        setTimeout(function(){
+          finishAuth();
+        }, 220);
+      }
+
+      async function saveRecoveredAccess(){
+        const recUser = byId("recUser").value.trim();
+        const pass = byId("newPass").value;
+        const pass2 = byId("newPass2").value;
+        const savedUser = (localStorage.getItem(KEYS.user) || "").trim();
+        const finalUser = recUser || savedUser;
+
+        if(!finalUser){
+          setMsg(byId("recoveryMsg"), "Digite um usuario.");
+          return;
+        }
+        if(pass.length < 4){
+          setMsg(byId("recoveryMsg"), "A nova senha precisa ter pelo menos 4 caracteres.");
+          return;
+        }
+        if(pass !== pass2){
+          setMsg(byId("recoveryMsg"), "As novas senhas nao conferem.");
+          return;
+        }
+
+        const ok =
+          norm(byId("recPerg1").value) === norm(localStorage.getItem(KEYS.q1)) &&
+          norm(byId("recPerg2").value) === norm(localStorage.getItem(KEYS.q2)) &&
+          norm(byId("recPerg3").value) === norm(localStorage.getItem(KEYS.q3));
+
+        if(!ok){
+          setMsg(byId("recoveryMsg"), "As respostas nao conferem.");
+          return;
+        }
+
+        localStorage.setItem(KEYS.user, finalUser);
+        localStorage.setItem(KEYS.pass, pass);
+        byId("loginUser").value = finalUser;
+        byId("loginPass").value = pass;
+        if(byId("rememberLogin").checked){
+          saveRememberedLogin();
+        }
+
+        setMsg(byId("recoveryMsg"), "Senha atualizada. Abrindo o programa.", true);
+        setTimeout(async function(){
+          const opened = await finishAuth();
+          if(!opened){
+            setMsg(byId("recoveryMsg"), "Senha salva, mas o programa nao abriu automaticamente.", true);
+          }
+        }, 260);
+      }
+
+      byId("activateLicense").addEventListener("click", function(){ activateLicense(); });
+      byId("continueTrial").addEventListener("click", continueTrialAccess);
+      byId("copyRegistrationCode").addEventListener("click", copyRegistrationCode);
+      byId("copyRegistrationCodeLink").addEventListener("click", copyRegistrationCode);
+      byId("buyLicenseOnline").addEventListener("click", openPurchasePortal);
+      byId("buyLicenseOnlineCadastro").addEventListener("click", openPurchasePortal);
+      byId("buyLicenseOnlinePerguntas").addEventListener("click", openPurchasePortal);
+      byId("buyLicenseOnlineLogin").addEventListener("click", openPurchasePortal);
+      byId("buyLicenseOnlineRecovery").addEventListener("click", openPurchasePortal);
+      byId("goCadastroPerguntas").addEventListener("click", goCadastroPerguntas);
+      byId("goLoginFromCadastro").addEventListener("click", function(){ showPanel("login"); });
+      byId("backCadastroDados").addEventListener("click", function(){ showPanel("cadastro-dados"); });
+      byId("saveCadastro").addEventListener("click", function(){ saveCadastro(); });
+      byId("doLogin").addEventListener("click", function(){ doLogin(); });
+      byId("goRecoveryFromLogin").addEventListener("click", function(){ showPanel("recovery"); });
+      byId("saveRecoveredAccess").addEventListener("click", saveRecoveredAccess);
+      byId("goRecoveryAgain").addEventListener("click", function(){ showPanel("recovery"); });
+      byId("closeAppBtn").addEventListener("click", function(){ closeApp(); });
+
+      byId("activationKey").addEventListener("keydown", function(event){
+        if(event.key === "Enter") activateLicense();
+      });
+      byId("cadPass2").addEventListener("keydown", function(event){
+        if(event.key === "Enter") goCadastroPerguntas();
+      });
+      byId("cadPerg3").addEventListener("keydown", function(event){
+        if(event.key === "Enter") saveCadastro();
+      });
+      byId("loginPass").addEventListener("keydown", function(event){
+        if(event.key === "Enter") doLogin();
+      });
+      byId("newPass2").addEventListener("keydown", function(event){
+        if(event.key === "Enter") saveRecoveredAccess();
+      });
+
+      document.addEventListener("keydown", function(event){
+        if(event.key !== "Escape") return;
+        closeApp();
+      });
+
+      const initialPanel = !canOpenAccessPanels()
+        ? "activation"
+        : (isRegistered() ? "login" : "cadastro-dados");
+
+      showPanel(initialPanel).finally(function(){
+        showWindowOnce();
+      });
+    })();
+  </script>
+</body>
+</html>

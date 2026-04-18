@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Comprar licenca - Controle Financeiro Familiar</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <main class="page">
+    <section class="card">
+      <div class="hero">
+        <p class="eyebrow">Venda automatica</p>
+        <h1>Controle Financeiro Familiar</h1>
+        <p id="productDescription" class="heroText">Carregando informacoes da licenca...</p>
+        <div class="priceBox">
+          <span>Valor</span>
+          <strong id="priceText">--</strong>
+        </div>
+      </div>
+
+      <form id="checkoutForm" class="form">
+        <label>
+          <span>Email do comprador</span>
+          <input id="email" name="email" type="email" placeholder="voce@exemplo.com" required>
+        </label>
+
+        <label>
+          <span>Nome do comprador</span>
+          <input id="name" name="name" type="text" placeholder="Seu nome">
+        </label>
+
+        <label>
+          <span>Codigo de registro do cliente</span>
+          <input id="registrationCode" name="registrationCode" type="text" placeholder="ABCD-EFGH-IJKL" required>
+        </label>
+
+        <button id="checkoutButton" class="primary" type="submit">Ir para o pagamento</button>
+        <p id="formMessage" class="message"></p>
+      </form>
+
+      <section class="tips">
+        <h2>Como funciona</h2>
+        <ol>
+          <li>O cliente abre o programa e copia o codigo de registro.</li>
+          <li>Ele paga nesta pagina.</li>
+          <li>A chave de ativacao aparece automaticamente na tela final e pode ser enviada por email.</li>
+        </ol>
+      </section>
+    </section>
+  </main>
+
+  <script src="./app.js" type="module"></script>
+</body>
+</html>

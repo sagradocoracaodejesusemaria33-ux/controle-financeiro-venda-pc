@@ -1,0 +1,14 @@
+{
+  "name": "controle-financeiro-familiar",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "tauri": "tauri",
+    "sales:dev": "npm --prefix sales-portal run dev",
+    "sales:start": "npm --prefix sales-portal start"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2"
+  }
+}
