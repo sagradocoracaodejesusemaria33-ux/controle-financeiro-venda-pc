@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Controle de Empréstimos</title>
+<style>
+*{box-sizing:border-box}
+
+body{
+  font-family:Arial,sans-serif;
+  background:transparent;
+  margin:0;
+  padding:0;
+  color:#0f172a;
+}
+
+.card{
+  width:100%;
+  max-width:none;
+  margin:0 auto;
+  background:#fff;
+  border-radius:16px;
+  overflow:hidden;
+  border:1px solid #dbeafe;
+}
+
+.header,.footer{
+  background:#2563d6;
+  color:white;
+}
+
+.header{
+  padding:16px 18px;
+}
+
+.header h2{
+  margin:0;
+  font-size:18px;
+  line-height:1.2;
+}
+
+.header p{
+  margin:5px 0 0;
+  font-size:11px;
+  line-height:1.35;
+}
+
+.content{
+  padding:14px;
+}
+
+.aviso{
+  background:#eef6ff;
+  border:1px solid #bfdbfe;
+  border-radius:10px;
+  padding:10px 12px;
+  color:#0f4aa8;
+  margin-bottom:12px;
+  font-size:12px;
+  line-height:1.4;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:8px;
+}
+
+label{
+  display:block;
+  font-size:10.5px;
+  font-weight:400;
+  margin-bottom:4px;
+}
+
+input,select{
+  width:100%;
+  height:34px;
+  border:1px solid #cfe0f5;
+  border-radius:8px;
+  padding:0 9px;
+  background:#fff;
+  font-size:12px;
+}
+
+.botoes{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:8px;
+  margin:12px 0;
+}
+
+.botoes button{
+  height:38px;
+  border:0;
+  border-radius:8px;
+  color:white;
+  font-weight:400;
+  cursor:pointer;
+  font-size:12px;
+}
+
+.azul{background:#2563d6}
+.verde{background:#16a34a}
+.vermelho{background:#ef4444}
+
+.resumo{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:8px;
+  margin-bottom:8px;
+}
+
+.box{
+  border:1px solid #dbeafe;
+  border-radius:10px;
+  padding:8px 10px;
+  background:#f8fbff;
+  font-size:11px;
+  color:#173b75;
+  min-height:62px;
+}
+
+.box strong{
+  display:block;
+  margin-top:4px;
+  font-size:14px;
+  color:#002b6b;
+}
+
+.verdeTxt strong{color:#008a22}
+.vermelhoTxt strong{color:#e60019}
+
+.tabela-wrap{
+  width:100%;
+  overflow:hidden;
+  border:1px solid #dbeafe;
+  border-radius:10px;
+  margin-top:4px;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  table-layout:fixed;
+}
+
+th{
+  background:#2563d6;
+  color:white;
+  padding:8px 4px;
+  font-size:11px;
+  border-right:1px solid rgba(255,255,255,.55);
+}
+
+th:last-child{
+  border-right:none;
+}
+
+td{
+  padding:8px 4px;
+  font-size:11px;
+  text-align:center;
+  border-top:1px solid #e5edf8;
+  border-right:1px solid #e5edf8;
+  overflow:hidden;
+}
+
+td:last-child{
+  border-right:none;
+}
+
+th:nth-child(1),td:nth-child(1){width:85px}
+th:nth-child(2),td:nth-child(2){width:135px}
+th:nth-child(3),td:nth-child(3){width:105px}
+th:nth-child(4),td:nth-child(4){width:100px}
+th:nth-child(5),td:nth-child(5){width:65px}
+th:nth-child(6),td:nth-child(6){width:55px}
+th:nth-child(7),td:nth-child(7){width:70px}
+th:nth-child(8),td:nth-child(8){width:185px}
+
+.acoes{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:5px;
+  flex-wrap:nowrap;
+}
+
+.acoes button{
+  height:28px;
+  border:0;
+  border-radius:7px;
+  color:white;
+  font-size:11px;
+  font-weight:400;
+  padding:0 8px;
+  white-space:nowrap;
+  cursor:pointer;
+}
+
+.pagar{background:#1da1f2}
+.desfazer{background:#6b7280}
+.excluir{background:#ef4444}
+
+.campo-extra.oculto{display:none}
+
+.footer{
+  text-align:center;
+  padding:12px;
+  font-size:12px;
+}
+
+@media(max-width:900px){
+  body{padding:10px}
+  .grid,.resumo,.botoes{grid-template-columns:1fr}
+  .tabela-wrap{overflow-x:auto}
+  table{min-width:850px}
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+  <div class="header">
+    <h2>Controle de Empréstimos</h2>
+    <p>Calcule empréstimo, IOF, parcelas pagas e saldo restante.</p>
+  </div>
+
+  <div class="content">
+    <div class="aviso">
+      <b>Importante:</b> Os valores são estimativas para controle financeiro. Consulte o contrato para valores oficiais.
+    </div>
+
+    <div class="grid">
+      <div>
+        <label>Tipo de empréstimo</label>
+        <select id="tipoEmprestimo">
+          <option>Empréstimo pessoal</option>
+          <option>Financiamento</option>
+          <option>Consignado</option>
+          <option>Cartão / fatura</option>
+          <option>Outro</option>
+        </select>
+      </div>
+
+      <div>
+        <label>Tipo de lançamento</label>
+        <select id="tipoLancamento">
+          <option>Calcular empréstimo</option>
+          <option>Empréstimo feito</option>
+        </select>
+      </div>
+
+      <div>
+        <label>Data da solicitação</label>
+        <input id="data" type="date">
+      </div>
+
+      <div>
+        <label>Instituição</label>
+        <select id="instituicao">
+          <option>Caixa Econômica</option>
+          <option>Bradesco</option>
+          <option>Itaú</option>
+          <option>Banco do Brasil</option>
+          <option>Santander</option>
+          <option>Nubank</option>
+          <option>Inter</option>
+          <option>C6 Bank</option>
+          <option>Banco Pan</option>
+          <option>Outro</option>
+        </select>
+        <input id="instituicaoOutro" placeholder="Digite o banco" style="display:none;">
+      </div>
+
+      <div><label>Valor solicitado (R$)</label><input id="valor" inputmode="numeric" placeholder="0,00"></div>
+      <div><label>Parcelas</label><input id="parcelas" inputmode="numeric" placeholder="0"></div>
+      <div><label>Juros ao mês (%)</label><input id="juros" inputmode="numeric" placeholder="0,00 %"></div>
+      <div id="campoTaxas" class="campo-extra"><label>Outras taxas / seguro (R$)</label><input id="taxas" inputmode="numeric" placeholder="0,00"></div>
+      <div id="campoIofAuto" class="campo-extra"><label>IOF automático?</label><select id="iofAuto"><option>Sim</option><option>Não</option></select></div>
+      <div id="campoIofManual" class="campo-extra"><label>IOF manual (R$)</label><input id="iofManual" inputmode="numeric" placeholder="0,00"></div>
+    </div>
+
+    <div class="botoes">
+      <button class="azul" type="button" onclick="calcular()">Calcular</button>
+      <button class="verde" type="button" onclick="salvarEmprestimo()">Salvar empréstimo</button>
+      <button class="vermelho" type="button" onclick="limparCampos()">Limpar campos</button>
+    </div>
+
+    <div class="resumo">
+      <div class="box">Valor solicitado<strong id="rValor">—</strong></div>
+      <div class="box">IOF estimado<strong id="rIof">—</strong></div>
+      <div class="box">Valor financiado<strong id="rFinanciado">—</strong></div>
+      <div class="box">Valor da parcela<strong id="rParcela">—</strong></div>
+      <div class="box">Total a pagar<strong id="rTotal">—</strong></div>
+    </div>
+
+    <div class="resumo">
+      <div class="box verdeTxt">Total pago<strong id="rPago">R$ 0,00</strong></div>
+      <div class="box vermelhoTxt">Total restante<strong id="rFalta">R$ 0,00</strong></div>
+      <div class="box">Parcelas restantes total<strong id="rRestantes">0</strong></div>
+      <div class="box">Juros ao ano<strong id="rJurosBruto">—</strong></div>
+      <div class="box">Total de empréstimos<strong id="rTotalEmprestimos">R$ 0,00</strong></div>
+    </div>
+
+    <div class="tabela-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Tipo</th>
+            <th>Instituição</th>
+            <th>Valor</th>
+            <th>Parcelas</th>
+            <th>Pagas</th>
+            <th>Restantes</th>
+            <th>Ação</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="footer">© 2026 Controle Financeiro Familiar</div>
+</div>
+
+<script>
+let emprestimos = JSON.parse(localStorage.getItem("emprestimos_final_compacto") || "[]");
+let ultimoCalculo = null;
+
+function apenasDigitos(v){return String(v || "").replace(/\D/g,"");}
+
+function moedaInput(v){
+  const digitos = apenasDigitos(v);
+  if(!digitos) return "";
+  const n = Number(digitos) / 100;
+  return n.toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+
+function numeroMoeda(v){
+  const digitos = apenasDigitos(v);
+  return digitos ? Number(digitos) / 100 : 0;
+}
+
+function numeroInteiro(v){
+  return Number(apenasDigitos(v)) || 0;
+}
+
+function dinheiro(v){
+  return Number(v || 0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+}
+
+function hoje(){
+  return new Date().toISOString().slice(0,10);
+}
+
+["valor","taxas","iofManual"].forEach(id=>{
+  document.getElementById(id).addEventListener("input",function(){
+    this.value = moedaInput(this.value);
+  });
+});
+
+document.getElementById("parcelas").addEventListener("input",function(){
+  this.value = apenasDigitos(this.value);
+});
+
+document.getElementById("juros").addEventListener("input",function(){
+  let v = this.value.replace(/%/g,"").replace(/[^0-9,\.]/g,"").replace(".",",");
+  const partes = v.split(",");
+  if(partes.length > 2){
+    v = partes[0] + "," + partes.slice(1).join("");
+  }
+  this.value = v ? v + " %" : "";
+});
+
+document.getElementById("juros").addEventListener("focus",function(){
+  this.value = this.value.replace(" %","");
+});
+
+document.getElementById("juros").addEventListener("blur",function(){
+  let v = this.value.replace(/%/g,"").trim();
+  this.value = v ? v + " %" : "";
+});
+
+document.getElementById("instituicao").addEventListener("change",ajustarInstituicao);
+
+function ajustarInstituicao(){
+  const select = document.getElementById("instituicao");
+  const campo = document.getElementById("instituicaoOutro");
+
+  if(select.value === "Outro"){
+    select.style.display = "none";
+    campo.style.display = "block";
+    campo.focus();
+  }else{
+    select.style.display = "block";
+    campo.style.display = "none";
+    campo.value = "";
+  }
+}
+
+function instituicaoEscolhida(){
+  const select = document.getElementById("instituicao");
+  const campo = document.getElementById("instituicaoOutro");
+
+  if(select.style.display === "none"){
+    return campo.value.trim() || "Outro";
+  }
+
+  return select.value;
+}
+
+document.getElementById("tipoLancamento").addEventListener("change",ajustarTipoLancamento);
+
+function ajustarTipoLancamento(){
+  const feito = document.getElementById("tipoLancamento").value === "Empréstimo feito";
+  ["campoTaxas","campoIofAuto","campoIofManual"].forEach(id=>{
+    document.getElementById(id).classList.toggle("oculto", feito);
+  });
+
+  if(feito){
+    document.getElementById("taxas").value = "";
+    document.getElementById("iofManual").value = "";
+    document.getElementById("iofAuto").value = "Não";
+  }
+}
+
+function calcular(){
+  const valor = numeroMoeda(document.getElementById("valor").value);
+  const parcelas = numeroInteiro(document.getElementById("parcelas").value);
+  const juros = Number(document.getElementById("juros").value.replace("%","").replace(",",".").trim() || 0) / 100;
+  const feito = document.getElementById("tipoLancamento").value === "Empréstimo feito";
+  const taxas = feito ? 0 : numeroMoeda(document.getElementById("taxas").value);
+  const iofManual = feito ? 0 : numeroMoeda(document.getElementById("iofManual").value);
+  const iofAuto = feito ? false : document.getElementById("iofAuto").value === "Sim";
+
+  if(valor <= 0 || parcelas <= 0){
+    alert("Preencha valor solicitado e parcelas.");
+    return null;
+  }
+
+  const iof = iofAuto ? valor * 0.03 : iofManual;
+  const financiado = valor + taxas + iof;
+
+  let parcela = financiado / parcelas;
+  if(juros > 0){
+    parcela = financiado * (juros / (1 - Math.pow(1 + juros, -parcelas)));
+  }
+
+  const total = parcela * parcelas;
+  const jurosBruto = valor > 0 ? ((total - financiado) / valor) * 100 : 0;
+
+  ultimoCalculo = {valor,parcelas,juros,taxas,iof,financiado,parcela,total,jurosBruto};
+
+  document.getElementById("rValor").textContent = dinheiro(valor);
+  document.getElementById("rIof").textContent = dinheiro(iof);
+  document.getElementById("rFinanciado").textContent = dinheiro(financiado);
+  document.getElementById("rParcela").textContent = dinheiro(parcela);
+  document.getElementById("rTotal").textContent = dinheiro(total);
+  document.getElementById("rJurosBruto").textContent = jurosBruto.toFixed(2).replace(".",",") + "%";
+
+  return ultimoCalculo;
+}
+
+function salvarEmprestimo(){
+  const calc = calcular();
+  if(!calc) return;
+
+  emprestimos.push({
+    data: document.getElementById("data").value || hoje(),
+    tipo: document.getElementById("tipoEmprestimo").value,
+    instituicao: instituicaoEscolhida(),
+    valor: calc.valor,
+    parcelas: calc.parcelas,
+    pagas: 0,
+    parcela: calc.parcela,
+    total: calc.total
+  });
+
+  salvarLista();
+  renderizar();
+}
+
+function pagar(i){
+  if(emprestimos[i].pagas < emprestimos[i].parcelas){
+    emprestimos[i].pagas++;
+    salvarLista();
+    renderizar();
+  }
+}
+
+function desfazer(i){
+  if(emprestimos[i].pagas > 0){
+    emprestimos[i].pagas--;
+    salvarLista();
+    renderizar();
+  }
+}
+
+function excluir(i){
+  if(confirm("Excluir este empréstimo?")){
+    emprestimos.splice(i,1);
+    salvarLista();
+    renderizar();
+  }
+}
+
+function limparCampos(){
+  ["data","valor","parcelas","juros","taxas","iofManual","instituicaoOutro"].forEach(id=>document.getElementById(id).value="");
+  document.getElementById("instituicao").style.display = "block";
+  document.getElementById("instituicaoOutro").style.display = "none";
+  document.getElementById("instituicao").value = "Caixa Econômica";
+  ["rValor","rIof","rFinanciado","rParcela","rTotal","rJurosBruto"].forEach(id=>document.getElementById(id).textContent="—");
+}
+
+function salvarLista(){
+  localStorage.setItem("emprestimos_final_compacto",JSON.stringify(emprestimos));
+}
+
+function atualizarResumoGeral(){
+  let totalEmp = 0;
+  let totalPago = 0;
+  let falta = 0;
+  let restantes = 0;
+
+  emprestimos.forEach(e=>{
+    totalEmp += e.valor;
+    totalPago += e.parcela * e.pagas;
+    falta += e.parcela * (e.parcelas - e.pagas);
+    restantes += e.parcelas - e.pagas;
+  });
+
+  document.getElementById("rPago").textContent = dinheiro(totalPago);
+  document.getElementById("rFalta").textContent = dinheiro(falta);
+  document.getElementById("rRestantes").textContent = restantes;
+  document.getElementById("rTotalEmprestimos").textContent = dinheiro(totalEmp);
+}
+
+function renderizar(){
+  const tbody = document.getElementById("tbody");
+  tbody.innerHTML = "";
+
+  emprestimos.forEach((e,i)=>{
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${e.data}</td>
+      <td>${e.tipo}</td>
+      <td>${e.instituicao}</td>
+      <td>${dinheiro(e.valor)}</td>
+      <td>${e.parcelas}</td>
+      <td>${e.pagas}</td>
+      <td>${e.parcelas - e.pagas}</td>
+      <td>
+        <div class="acoes">
+          <button class="pagar" type="button" onclick="pagar(${i})">Pagar</button>
+          <button class="desfazer" type="button" onclick="desfazer(${i})">Desfazer</button>
+          <button class="excluir" type="button" onclick="excluir(${i})">Excluir</button>
+        </div>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  atualizarResumoGeral();
+}
+
+ajustarTipoLancamento();
+ajustarInstituicao();
+renderizar();
+</script>
+
+</body>
+</html>

@@ -10,15 +10,15 @@ const refreshButton = document.getElementById("refreshButton");
 copyLicenseButton.addEventListener("click", async () => {
   const licenseKey = licenseKeyText.textContent.trim();
   if (!licenseKey || licenseKey === "-") {
-    setSupport("A chave ainda nao esta pronta.", false);
+    setSupport("A chave ainda não está pronta.", false);
     return;
   }
 
   try {
     await navigator.clipboard.writeText(licenseKey);
-    setSupport("Chave copiada. Agora cole no programa.", true);
+    setSupport("Chave copiada. Agora cole no programa e clique em Ativar licença.", true);
   } catch (_error) {
-    setSupport("Nao foi possivel copiar automaticamente.", false);
+    setSupport("Não foi possível copiar automaticamente. Selecione e copie a chave.", false);
   }
 });
 
@@ -30,7 +30,7 @@ loadLicense();
 
 async function loadLicense() {
   if (!sessionId) {
-    statusText.textContent = "Sessao de pagamento nao encontrada.";
+    statusText.textContent = "Sessão de pagamento não encontrada.";
     return;
   }
 
@@ -41,7 +41,7 @@ async function loadLicense() {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.error || "Nao foi possivel consultar sua compra.");
+      throw new Error(data.error || "Não foi possível consultar sua compra.");
     }
 
     registrationCodeText.textContent = data.registrationCode || "-";

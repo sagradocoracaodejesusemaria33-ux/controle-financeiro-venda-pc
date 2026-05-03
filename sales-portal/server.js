@@ -30,7 +30,7 @@ const stripe = STRIPE_SECRET_KEY ? new Stripe(STRIPE_SECRET_KEY) : null;
 const transporter = buildMailer();
 
 if (!LICENSE_SECRET) {
-  console.warn("LICENSE_SECRET nao configurado. Defina a variavel no servidor antes de vender.");
+  console.warn("LICENSE_SECRET nao configurado. Defina essa variavel no Render antes de vender.");
 }
 
 app.set("trust proxy", true);
@@ -53,14 +53,13 @@ app.post(
     }
 
     try {
-      switch (event.type) {
-        case "checkout.session.completed":
-        case "checkout.session.async_payment_succeeded":
-          await deliverLicenseByEmail(event.data.object);
-          break;
-        default:
-          break;
+      if (
+        event.type === "checkout.session.completed" ||
+        event.type === "checkout.session.async_payment_succeeded"
+      ) {
+        await deliverLicenseByEmail(event.data.object);
       }
+
       return res.json({ received: true });
     } catch (error) {
       console.error("Erro ao processar webhook:", error);
@@ -71,6 +70,17 @@ app.post(
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(204);
+  }
+
+  return next();
+});
 app.use(express.static(PUBLIC_DIR));
 
 app.get("/health", (_req, res) => {
@@ -150,7 +160,6 @@ app.get("/api/session-license", async (req, res) => {
   }
 });
 
-
 app.post("/api/validate-license", (req, res) => {
   const registrationCode = normalizeRegistrationCode(req.body.registrationCode);
   const licenseKey = normalizeLicense(req.body.licenseKey);
@@ -165,10 +174,67 @@ app.post("/api/validate-license", (req, res) => {
 
   const expected = normalizeLicense(generateActivationKey(registrationCode));
   if (licenseKey !== expected) {
-    return res.status(400).json({ valid: false, error: "Chave de ativacao invalida para este computador." });
+    return res.status(400).json({
+      valid: false,
+      error: "Chave de ativacao invalida para este computador."
+    });
   }
 
   return res.json({ valid: true, registrationCode });
+});
+
+app.post("/api/send-auth-recovery-email", async (req, res) => {
+  if (!transporter) {
+    return res.status(500).json({
+      ok: false,
+      error: "Recuperacao por e-mail ainda nao esta configurada no servidor."
+    });
+  }
+
+  const email = normalizeEmail(req.body.email);
+  const code = normalizeRecoveryCode(req.body.code);
+  const username = String(req.body.username || "").trim();
+
+  if (!email || !email.includes("@")) {
+    return res.status(400).json({ ok: false, error: "Informe um e-mail valido." });
+  }
+
+  if (!code) {
+    return res.status(400).json({ ok: false, error: "Codigo de recuperacao invalido." });
+  }
+
+  try {
+    const from = process.env.SMTP_FROM || process.env.SMTP_USER;
+    const supportLine = SUPPORT_EMAIL
+      ? `Se precisar de ajuda, fale com ${SUPPORT_EMAIL}.`
+      : "Se precisar de ajuda, responda este e-mail.";
+
+    await transporter.sendMail({
+      from,
+      to: email,
+      subject: "Codigo de recuperacao - Controle Financeiro Familiar",
+      text: [
+        "Recebemos um pedido para redefinir a senha do programa.",
+        "",
+        username ? `Usuario: ${username}` : "",
+        `Codigo de recuperacao: ${code}`,
+        "",
+        "Digite este codigo na tela de recuperacao do aplicativo.",
+        "O codigo expira em 10 minutos.",
+        supportLine
+      ]
+        .filter(Boolean)
+        .join("\n")
+    });
+
+    return res.json({ ok: true });
+  } catch (error) {
+    console.error("Erro ao enviar e-mail de recuperacao:", error);
+    return res.status(500).json({
+      ok: false,
+      error: "Nao foi possivel enviar o e-mail de recuperacao."
+    });
+  }
 });
 
 app.get("*", (_req, res) => {
@@ -216,17 +282,26 @@ function trimTrailingSlash(value) {
   return String(value || "").replace(/\/+$/, "");
 }
 
+function normalizeEmail(value) {
+  return String(value || "").trim().toLowerCase();
+}
+
 function normalizeRegistrationCode(value) {
-  const cleaned = String(value || "")
+  return String(value || "")
     .trim()
     .toUpperCase()
     .replace(/[^A-Z0-9-]/g, "");
-
-  return cleaned;
 }
 
 function normalizeLicense(value) {
   return String(value || "").trim().toUpperCase().replace(/\s+/g, "");
+}
+
+function normalizeRecoveryCode(value) {
+  return String(value || "")
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9-]/g, "");
 }
 
 function licenseNumber(text, seed) {
@@ -237,7 +312,7 @@ function licenseNumber(text, seed) {
   for (let index = 0; index < raw.length; index += 1) {
     const code = raw.charCodeAt(index);
     total = (total + code * (index + 17)) % mod;
-    total = ((total * 131) + code) % mod;
+    total = (total * 131 + code) % mod;
   }
 
   return total;
@@ -295,8 +370,7 @@ function buildSessionPayload(session) {
     paymentStatus,
     customerEmail:
       session.customer_details?.email || session.customer_email || session.metadata?.customerEmail || "",
-    customerName:
-      session.customer_details?.name || session.metadata?.customerName || "",
+    customerName: session.customer_details?.name || session.metadata?.customerName || "",
     registrationCode,
     licenseKey: paid && registrationCode ? generateActivationKey(registrationCode) : "",
     supportEmail: SUPPORT_EMAIL,
@@ -327,7 +401,7 @@ async function deliverLicenseByEmail(session) {
       `Codigo de registro: ${payload.registrationCode}`,
       `Chave de ativacao: ${payload.licenseKey}`,
       "",
-      "Abra o programa, cole a chave e clique em Liberar acesso.",
+      "Abra o programa, cole a chave e clique em Ativar licenca.",
       supportLine
     ].join("\n")
   });

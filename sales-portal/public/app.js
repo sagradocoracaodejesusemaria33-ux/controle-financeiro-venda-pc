@@ -13,7 +13,7 @@ loadConfig();
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
-  setMessage("Abrindo o checkout...", true);
+  setMessage("Abrindo pagamento seguro...", true);
 
   const payload = {
     email: document.getElementById("email").value.trim(),
@@ -32,12 +32,12 @@ form.addEventListener("submit", async (event) => {
 
     const data = await response.json();
     if (!response.ok) {
-      throw new Error(data.error || "Nao foi possivel iniciar a compra.");
+      throw new Error(data.error || "Não foi possível iniciar a compra.");
     }
 
     window.location.href = data.url;
   } catch (error) {
-    setMessage(error.message || "Falha ao iniciar o checkout.", false);
+    setMessage(error.message || "Falha ao iniciar o pagamento.", false);
   }
 });
 
@@ -45,11 +45,16 @@ async function loadConfig() {
   try {
     const response = await fetch("/api/public-config");
     const data = await response.json();
-    productDescription.textContent = data.description;
+
+    productDescription.textContent = data.description || "Licença definitiva do programa.";
     priceText.textContent = formatMoney(data.amount, data.currency);
+
+    if (!data.checkoutReady) {
+      setMessage("Pagamento ainda não configurado no servidor.", false);
+    }
   } catch (_error) {
     priceText.textContent = "Consulte o suporte";
-    productDescription.textContent = "Licenca definitiva do programa.";
+    productDescription.textContent = "Licença definitiva do programa.";
   }
 }
 

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ativação de Licença</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  height: 100vh;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #081a36, #0b2a5a 50%, #07142b);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* 🔵 FUNDO DECORATIVO */
+.bg-shape {
+  position: absolute;
+  border: 1px solid rgba(80,140,255,0.15);
+  border-radius: 40px;
+  transform: rotate(45deg);
+}
+
+.shape1 {
+  width: 350px;
+  height: 350px;
+  left: -100px;
+  top: 200px;
+}
+
+.shape2 {
+  width: 250px;
+  height: 250px;
+  left: 50px;
+  top: 300px;
+}
+
+/* 📊 GRÁFICO NO FUNDO */
+.chart {
+  position: absolute;
+  right: 120px;
+  bottom: 120px;
+  width: 260px;
+  height: 180px;
+  opacity: 0.12;
+}
+
+.bar {
+  position: absolute;
+  bottom: 0;
+  width: 35px;
+  background: #4c84ff;
+  border-radius: 6px 6px 0 0;
+}
+
+.bar1 { left: 0; height: 50px; }
+.bar2 { left: 50px; height: 90px; }
+.bar3 { left: 100px; height: 70px; }
+.bar4 { left: 150px; height: 120px; }
+.bar5 { left: 200px; height: 150px; }
+
+/* 🧾 CARD */
+.card {
+  position: relative;
+  z-index: 2;
+  width: 360px;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.45);
+}
+
+/* 🔷 HEADER */
+.header {
+  background: linear-gradient(135deg, #3f82ff, #2d4ed8);
+  color: white;
+  text-align: center;
+  padding: 20px;
+}
+
+.logo {
+  width: 75px;
+  margin-bottom: 8px;
+  filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3));
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.header p {
+  font-size: 13px;
+  margin-top: 6px;
+}
+
+/* 📦 CONTEÚDO */
+.content {
+  padding: 18px;
+}
+
+h2 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.description {
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+
+label {
+  display: block;
+  margin-top: 10px;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+input {
+  width: 100%;
+  height: 36px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 0 10px;
+  font-size: 13px;
+}
+
+/* 🔘 BOTÕES */
+button {
+  width: 100%;
+  height: 38px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 12px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #3b6fff, #2b4ed8);
+  color: white;
+}
+
+.btn-free {
+  background: linear-gradient(135deg, #2fb653, #1e8f3c);
+  color: white;
+}
+
+.divider {
+  text-align: center;
+  margin: 12px 0;
+  font-size: 12px;
+  color: #777;
+}
+
+/* 🎁 BOX TESTE */
+.trial-box {
+  background: #f2f2f2;
+  padding: 12px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- FUNDO -->
+<div class="bg-shape shape1"></div>
+<div class="bg-shape shape2"></div>
+
+<div class="chart">
+  <div class="bar bar1"></div>
+  <div class="bar bar2"></div>
+  <div class="bar bar3"></div>
+  <div class="bar bar4"></div>
+  <div class="bar bar5"></div>
+</div>
+
+<!-- CARD -->
+<div class="card">
+  <div class="header">
+    <img src="logo.png" class="logo">
+    <h1>Controle Financeiro Familiar</h1>
+    <p>Organize suas finanças com segurança</p>
+  </div>
+
+  <div class="content">
+    <h2>Ativação da licença</h2>
+    <p class="description">Informe seus dados ou use o teste grátis.</p>
+
+    <label>Código de registro</label>
+    <input id="codigo" type="text" placeholder="Digite o código">
+
+    <label>Chave de ativação</label>
+    <input id="chave" type="text" placeholder="Digite a chave">
+
+    <button class="btn-primary" onclick="ativar()">
+      🛡️ Ativar licença
+    </button>
+
+    <div class="divider">ou</div>
+
+    <div class="trial-box">
+      <strong>Teste grátis por 3 dias</strong>
+      <p style="font-size:12px;">Use sem compromisso</p>
+
+      <button class="btn-free" onclick="teste()">
+        Iniciar teste grátis
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+function ativar() {
+  const c = document.getElementById("codigo").value;
+  const k = document.getElementById("chave").value;
+
+  if (!c || !k) {
+    alert("Preencha os campos!");
+    return;
+  }
+
+  alert("Simulação de ativação!");
+}
+
+function teste() {
+  localStorage.setItem("acessoLiberado", "sim");
+  alert("Teste grátis iniciado!");
+  window.location.href = "/";
+}
+</script>
+
+</body>
+</html>
